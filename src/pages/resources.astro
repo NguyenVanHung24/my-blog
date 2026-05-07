@@ -1,0 +1,124 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Main from "@/layouts/Main.astro";
+import { SITE } from "@/config";
+
+const resources = [
+  {
+    category: "SCP & IAM Guardrails",
+    categoryVi: "SCP & IAM Guardrails",
+    items: [
+      { title: "rami.wiki/scps", url: "http://rami.wiki/scps", desc: "Curated SCP reference by Rami McCarthy.", descVi: "Tài liệu tham khảo SCP được tổng hợp bởi Rami McCarthy." },
+      { title: "Wiz – Secure Defaults on AWS", url: "https://www.wiz.io/blog/how-to-set-secure-defaults-on-aws#preventing-resources-from-being-made-public-4", desc: "How to prevent resources from being made public.", descVi: "Cách ngăn tài nguyên bị công khai trên AWS." },
+      { title: "AWS IAM Permissions Guardrails (SCP)", url: "https://aws-samples.github.io/aws-iam-permissions-guardrails/guardrails/scp-guardrails.html", desc: "AWS sample SCP guardrails reference.", descVi: "Tài liệu tham khảo SCP guardrails từ AWS samples." },
+      { title: "SCP Best Practices – Summit Route", url: "https://summitroute.com/blog/2020/03/25/aws_scp_best_practices/#allow-only-approved-services", desc: "Practical SCP best practices: allow only approved services.", descVi: "Best practices SCP thực tế: chỉ cho phép các dịch vụ đã được phê duyệt." },
+      { title: "AWS Workshop – SCP", url: "https://png-ha.github.io/AWS_Workshop/5/5.4/", desc: "Hands-on SCP workshop.", descVi: "Workshop thực hành về SCP." },
+    ],
+  },
+  {
+    category: "AWS Security Learning",
+    categoryVi: "Học bảo mật AWS",
+    items: [
+      { title: "AWS Security Maturity Model", url: "https://maturitymodel.security.aws.dev/en/1.-quickwins/", desc: "Official AWS security maturity roadmap — start with quick wins.", descVi: "Lộ trình trưởng thành bảo mật AWS chính thức — bắt đầu với quick wins." },
+      { title: "Beyond the AWS Security Maturity Roadmap", url: "https://speakerdeck.com/ramimac/beyond-the-aws-security-maturity-roadmap?slide=16", desc: "Rami McCarthy's talk on going beyond the maturity model.", descVi: "Bài nói của Rami McCarthy về việc vượt ra ngoài maturity model." },
+      { title: "Getting into AWS Cloud Security as a Noob", url: "https://dagrz.com/writing/aws-security/getting-into-aws-security-research/", desc: "Practical guide for beginners entering AWS security research.", descVi: "Hướng dẫn thực tế cho người mới bắt đầu nghiên cứu bảo mật AWS." },
+      { title: "Cloud Security Resources – nojones.net", url: "https://www.nojones.net/cloud-security-resources", desc: "Comprehensive cloud security resource list.", descVi: "Danh sách tài nguyên bảo mật đám mây toàn diện." },
+      { title: "MITRE ATT&CK – Cloud Matrix", url: "https://attack.mitre.org/matrices/enterprise/cloud/", desc: "Cloud-specific attack techniques and tactics.", descVi: "Các kỹ thuật và chiến thuật tấn công đặc thù trên cloud." },
+    ],
+  },
+  {
+    category: "AWS Control Tower",
+    categoryVi: "AWS Control Tower",
+    items: [
+      { title: "Control Tower Deep Dive – Part 1", url: "https://medium.com/@omarnour_5895/aws-control-tower-deep-dive-part-1-a-theory-first-guide-from-the-official-workshop-06a42f5ecdc1", desc: "Theory-first guide to AWS Control Tower from the official workshop.", descVi: "Hướng dẫn lý thuyết về AWS Control Tower từ workshop chính thức." },
+      { title: "Customizing Your Landing Zone", url: "https://aws-samples.github.io/cloud-operations-best-practices/docs/guides/AWS%20Control%20Tower/customizing-your-landing-zone/", desc: "Best practices for customizing AWS Control Tower landing zones.", descVi: "Best practices để tùy chỉnh landing zone trong AWS Control Tower." },
+      { title: "AWS Control Tower Customizations (CfCT)", url: "https://github.com/aws-solutions/aws-control-tower-customizations/releases", desc: "Official AWS solution for customizing Control Tower at scale.", descVi: "Giải pháp chính thức của AWS để tùy chỉnh Control Tower theo quy mô." },
+    ],
+  },
+  {
+    category: "Hands-on Attack Labs",
+    categoryVi: "Lab tấn công thực hành",
+    items: [
+      { title: "CloudGoat – Rhino Security", url: "https://github.com/RhinoSecurityLabs/cloudgoat", desc: "Vulnerable-by-design AWS environments. Practice IAM misconfigs, S3 exposures, privilege escalation.", descVi: "Môi trường AWS được thiết kế có lỗ hổng. Thực hành IAM misconfiguration, S3 exposure, leo thang đặc quyền." },
+      { title: "Sadcloud", url: "https://github.com/nccgroup/sadcloud", desc: "Terraform templates creating intentionally insecure AWS infrastructure.", descVi: "Terraform templates tạo hạ tầng AWS không an toàn có chủ đích." },
+      { title: "AWSGoat", url: "https://github.com/ine-labs/AWSGoat", desc: "Vulnerable AWS infrastructure with step-by-step exploitation guides.", descVi: "Hạ tầng AWS có lỗ hổng với hướng dẫn khai thác từng bước." },
+      { title: "Kubernetes Goat", url: "https://github.com/madhuakula/kubernetes-goat", desc: "Interactive K8s security learning — container escapes, RBAC, pod security.", descVi: "Học bảo mật K8s tương tác — container escape, RBAC, pod security." },
+      { title: "TerraGoat", url: "https://github.com/bridgecrewio/terragoat", desc: "Vulnerable Terraform across AWS, Azure, GCP. Learn multi-cloud security mistakes.", descVi: "Terraform có lỗ hổng trên AWS, Azure, GCP. Học các lỗi bảo mật multi-cloud." },
+      { title: "Stratus Red Team", url: "https://stratus-red-team.cloud/", desc: "Granular cloud attack emulation for AWS, GCP, Azure.", descVi: "Mô phỏng tấn công cloud chi tiết cho AWS, GCP, Azure." },
+      { title: "Attack Path – pathfinding.cloud", url: "https://pathfinding.cloud/", desc: "Visualize and understand cloud attack paths.", descVi: "Trực quan hóa và hiểu các đường tấn công trên cloud." },
+    ],
+  },
+  {
+    category: "Kubernetes Security",
+    categoryVi: "Bảo mật Kubernetes",
+    items: [
+      { title: "BadPods on AWS EKS", url: "https://cybersecnerds.com/badpods-series-everything-allowed-on-aws-eks/", desc: "BadPods series — everything allowed on AWS EKS.", descVi: "Series BadPods — mọi thứ được cho phép trên AWS EKS." },
+      { title: "Kubernetes the Very Hard Way", url: "https://labs.iximiuz.com/courses/kubernetes-the-very-hard-way-0cbfd997/introduction/welcome", desc: "Deep hands-on K8s course from iximiuz labs.", descVi: "Khóa học K8s thực hành chuyên sâu từ iximiuz labs." },
+      { title: "KubernetesLabs – Step by Step", url: "https://nirgeier.github.io/KubernetesLabs/welcome/#devbox-installation", desc: "Learn Kubernetes step by step with labs.", descVi: "Học Kubernetes từng bước với các bài lab." },
+      { title: "k8s.af – K8s Outages", url: "https://k8s.af/", desc: "Collection of real Kubernetes outage postmortems.", descVi: "Tổng hợp các postmortem sự cố Kubernetes thực tế." },
+      { title: "10 Weird Ways to Blow Up Your K8s (Airbnb)", url: "https://hosted-files.sched.co/kccncna20/06/10_more_weird_ways_to_blow_up_your_k8s_airbnb.pdf", desc: "KubeCon talk by Airbnb on unusual K8s failure modes.", descVi: "Bài nói KubeCon của Airbnb về các cách thất bại bất thường trong K8s." },
+      { title: "k8squest", url: "https://github.com/Manoj-engineer/k8squest", desc: "K8s security quest — hands-on challenges.", descVi: "K8s security quest — các thử thách thực hành." },
+    ],
+  },
+  {
+    category: "Tools",
+    categoryVi: "Công cụ",
+    items: [
+      { title: "Steampipe – AWS Compliance", url: "https://hub.powerpipe.io/mods/turbot/steampipe-mod-aws-compliance/benchmarks/control.foundational_security_ec2_3?context=benchmark.foundational_security/benchmark.foundational_security_ec2", desc: "Query AWS resources against compliance benchmarks with SQL.", descVi: "Truy vấn tài nguyên AWS theo chuẩn compliance bằng SQL." },
+      { title: "Automate AWS Architecture Diagrams", url: "https://freedium-mirror.cfd/https://cloudwithazeem.medium.com/generate-aws-architecture-diagrams-simple-method-a687d1e50b8b", desc: "Generate AWS architecture diagrams automatically.", descVi: "Tự động tạo sơ đồ kiến trúc AWS." },
+    ],
+  },
+  {
+    category: "Blogs & Newsletters",
+    categoryVi: "Blog & Newsletter",
+    items: [
+      { title: "tldrsec", url: "https://tldrsec.com/", desc: "Weekly security newsletter — curated and concise.", descVi: "Newsletter bảo mật hàng tuần — được tuyển chọn và súc tích." },
+      { title: "ramimac.me", url: "https://ramimac.me/", desc: "Blog by Rami McCarthy, security researcher at Wiz.", descVi: "Blog của Rami McCarthy, nhà nghiên cứu bảo mật tại Wiz." },
+      { title: "CloudSecOps – Omar Nour", url: "https://medium.com/@omarnour_5895", desc: "Cloud security operations articles on Medium.", descVi: "Các bài viết về cloud security operations trên Medium." },
+    ],
+  },
+];
+---
+
+<Layout title={`Resources | ${SITE.title}`}>
+  <Main pageTitle="Resources" pageDesc="Blogs and resources I've collected and use — feel free to read and explore." i18nTitle="page.resources.title" i18nDesc="page.resources.desc">
+    <div class="divide-y divide-border">
+      {
+        resources.map(section => (
+          <details class="group border-b border-border py-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
+              <span class="text-lg font-semibold text-accent i18n-resource-cat" data-en={section.category} data-vi={section.categoryVi}>
+                {section.category}
+              </span>
+              <span class="text-accent transition-transform group-open:rotate-180">▾</span>
+            </summary>
+            <ul class="mt-4 space-y-4">
+              {section.items.map(item => (
+                <li class="flex flex-col gap-1">
+                  <a href={item.url} target="_blank" rel="noopener noreferrer"
+                    class="text-base font-medium hover:text-accent underline underline-offset-4">
+                    {item.title}
+                  </a>
+                  <p class="text-sm opacity-75 i18n-resource-desc" data-en={item.desc} data-vi={item.descVi}>
+                    {item.desc}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ))
+      }
+    </div>
+  </Main>
+</Layout>
+
+<script>
+  function applyResourceLang() {
+    const lang = localStorage.getItem("lang") || "en";
+    document.querySelectorAll<HTMLElement>(".i18n-resource-cat, .i18n-resource-desc").forEach(el => {
+      el.textContent = (lang === "vi" ? el.dataset.vi : el.dataset.en) ?? el.textContent;
+    });
+  }
+  applyResourceLang();
+  document.addEventListener("astro:after-swap", applyResourceLang);
+</script>

@@ -24,7 +24,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
   <main id="main-content" data-layout="index" class="app-layout">
     <section id="hero" class:list={["pt-8 pb-6", "border-b border-border"]}>
       <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        Mingalaba
+        Hey, I'm Hung 👋
       </h1>
       <a
         target="_blank"
@@ -41,26 +41,20 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         <span class="sr-only">RSS Feed</span>
       </a>
 
-      <p>
-        AstroPaper is a minimal, responsive, accessible and SEO-friendly Astro
-        blog theme. This theme follows best practices and provides accessibility
-        out of the box. Light and dark mode are supported by default. Moreover,
-        additional color schemes can also be configured.
+      <p data-i18n="hero.desc">
+        I work in <strong>cloud security</strong> and spend my time exploring how to build safer, more resilient systems on AWS and beyond. Currently diving deeper into <strong>Kubernetes</strong>, and modern infrastructure security.
       </p>
-      <p class="mt-2">
-        Read the blog posts or check
-        <LinkButton
+      <p class="mt-2" data-i18n="hero.sub">
+        This space is where I share what I'm learning — technical writeups, tools I find useful, and occasional personal reflections. Check out the <LinkButton
           class="underline decoration-dashed underline-offset-4 hover:text-accent"
-          href="https://github.com/satnaing/astro-paper#readme"
-        >
-          README
-        </LinkButton> for more info.
+          href="/resources"
+        >Resources</LinkButton> page or browse the posts below.
       </p>
       {
         // only display if at least one social link is enabled
         SOCIALS.length > 0 && (
           <div class="mt-4 flex max-sm:flex-col sm:items-center">
-            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">Social Links:</div>
+            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0" data-i18n="social.label">Social Links:</div>
             <Socials />
           </div>
         )
@@ -76,7 +70,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
             { "border-b border-border": recentPosts.length > 0 },
           ]}
         >
-          <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
+          <h2 class="text-2xl font-semibold tracking-wide" data-i18n="section.featured">Featured</h2>
           <ul>
             {featuredPosts.map(data => (
               <Card variant="h3" {...data} />
@@ -89,7 +83,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
+          <h2 class="text-2xl font-semibold tracking-wide" data-i18n="section.recent">Recent Posts</h2>
           <ul>
             {recentPosts.map(
               (data, index) =>
@@ -102,7 +96,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 
     <div class="my-8 text-center">
       <LinkButton href="/posts/">
-        All Posts
+        <span data-i18n="btn.allPosts">All Posts</span>
         <IconArrowRight class="inline-block rtl:-rotate-180" />
       </LinkButton>
     </div>

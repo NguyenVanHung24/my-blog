@@ -2,7 +2,6 @@
 import IconX from "@/assets/icons/IconX.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
-import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import LinkButton from "./LinkButton.astro";
@@ -66,43 +65,37 @@ const isActive = (path: string) => {
         id="menu-items"
         class:list={[
           "mt-4 grid w-44 grid-cols-2 place-content-center gap-2",
-          "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
+          "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-1 sm:[&>li>a]:py-1",
           "hidden",
-          "sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
+          "sm:mt-0 sm:flex sm:w-auto sm:flex-row sm:items-center sm:gap-x-1 sm:gap-y-0",
         ]}
       >
-        <li class="col-span-2">
+        <li class="col-span-1">
           <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-            Posts
+            <span data-i18n="nav.posts">Posts</span>
           </a>
         </li>
-        <li class="col-span-2">
+        <li class="col-span-1">
           <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-            Tags
+            <span data-i18n="nav.tags">Tags</span>
           </a>
         </li>
-        <li class="col-span-2">
+        <li class="col-span-1">
           <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-            About
+            <span data-i18n="nav.about">About</span>
+          </a>
+        </li>
+        <li class="col-span-1">
+          <a href="/resources" class:list={{ "active-nav": isActive("/resources") }}>
+            <span data-i18n="nav.resources">Resources</span>
           </a>
         </li>
         {
           SITE.showArchives && (
-            <li class="col-span-2">
-              <LinkButton
-                href="/archives"
-                class:list={[
-                  "focus-outline flex justify-center p-3 sm:p-1",
-                  {
-                    "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                  },
-                ]}
-                title="Archives"
-                aria-label="archives"
-              >
-                <IconArchive class="hidden sm:inline-block" />
-                <span class="sm:sr-only">Archives</span>
-              </LinkButton>
+            <li class="col-span-1">
+              <a href="/archives" class:list={{ "active-nav": isActive("/archives") }}>
+                Archives
+              </a>
             </li>
           )
         }
@@ -119,6 +112,16 @@ const isActive = (path: string) => {
             <IconSearch />
             <span class="sr-only">Search</span>
           </LinkButton>
+        </li>
+        <li class="col-span-1 flex items-center justify-center">
+          <button
+            id="lang-btn"
+            class="focus-outline flex p-3 sm:p-1 text-xs font-bold hover:text-accent"
+            title="Switch language"
+            aria-label="Switch language"
+          >
+            <span id="lang-label">EN</span>
+          </button>
         </li>
         {
           SITE.lightAndDarkMode && (
@@ -166,4 +169,82 @@ const isActive = (path: string) => {
 
   // Runs on view transitions navigation
   document.addEventListener("astro:after-swap", toggleNav);
+
+  function initLang() {
+    const btn = document.querySelector("#lang-btn");
+    const label = document.querySelector("#lang-label");
+    if (!btn || !label) return;
+
+    const lang = localStorage.getItem("lang") || "en";
+    label.textContent = lang === "en" ? "EN" : "VI";
+    filterByLang(lang);
+    applyTranslations(lang);
+
+    btn.addEventListener("click", () => {
+      const current = localStorage.getItem("lang") || "en";
+      const next = current === "en" ? "vi" : "en";
+      localStorage.setItem("lang", next);
+      label.textContent = next === "en" ? "EN" : "VI";
+      filterByLang(next);
+      applyTranslations(next);
+    });
+  }
+
+  function filterByLang(lang: string) {
+    document.querySelectorAll<HTMLElement>("li[data-lang]").forEach(el => {
+      el.style.display = el.dataset.lang === lang ? "" : "none";
+    });
+  }
+
+  function applyTranslations(lang: string) {
+    const t = lang === "vi"
+      ? {
+          "nav.posts": "Bài viết",
+          "nav.tags": "Thẻ",
+          "nav.about": "Giới thiệu",
+          "nav.resources": "Tài nguyên",
+          "social.label": "Mạng xã hội:",
+          "section.featured": "Nổi bật",
+          "section.recent": "Bài viết gần đây",
+          "btn.allPosts": "Tất cả bài viết",
+          "hero.desc": 'Mình làm về <strong>bảo mật đám mây</strong> và dành thời gian tìm hiểu cách xây dựng hệ thống an toàn hơn trên AWS và các nền tảng khác. Hiện đang học sâu hơn về <strong>Kubernetes</strong> và bảo mật hạ tầng hiện đại.',
+          "hero.sub": 'Đây là nơi mình chia sẻ những gì đang học — bài viết kỹ thuật, công cụ hữu ích và đôi khi là những suy nghĩ cá nhân. Xem trang <a class="underline decoration-dashed underline-offset-4 hover:text-accent" href="/resources">Tài nguyên</a> hoặc đọc các bài viết bên dưới.',
+          "page.posts.title": "Bài viết",
+          "page.posts.desc": "Tất cả các bài viết của mình.",
+          "page.tags.title": "Thẻ",
+          "page.tags.desc": "Tất cả các thẻ được dùng trong bài viết.",
+          "page.archives.title": "Lưu trữ",
+          "page.archives.desc": "Tất cả bài viết theo thời gian.",
+          "page.resources.title": "Tài nguyên",
+          "page.resources.desc": "Đây là những blog, tài liệu mà mình tổng hợp và sử dụng — bạn có thể đọc và tìm hiểu thêm.",
+        }
+      : {
+          "nav.posts": "Posts",
+          "nav.tags": "Tags",
+          "nav.about": "About",
+          "nav.resources": "Resources",
+          "social.label": "Social Links:",
+          "section.featured": "Featured",
+          "section.recent": "Recent Posts",
+          "btn.allPosts": "All Posts",
+          "hero.desc": 'I work in <strong>cloud security</strong> and spend my time exploring how to build safer, more resilient systems on AWS and beyond. Currently diving deeper into <strong>Kubernetes</strong>, and modern infrastructure security.',
+          "hero.sub": 'This space is where I share what I\'m learning — technical writeups, tools I find useful, and occasional personal reflections. Check out the <a class="underline decoration-dashed underline-offset-4 hover:text-accent" href="/resources">Resources</a> page or browse the posts below.',
+          "page.posts.title": "Posts",
+          "page.posts.desc": "All the articles I've posted.",
+          "page.tags.title": "Tags",
+          "page.tags.desc": "All the tags used in posts.",
+          "page.archives.title": "Archives",
+          "page.archives.desc": "All the articles I've archived.",
+          "page.resources.title": "Resources",
+          "page.resources.desc": "Blogs and resources I've collected and use — feel free to read and explore.",
+        };
+
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n!;
+      if (key in t) el.innerHTML = t[key as keyof typeof t];
+    });
+  }
+
+  initLang();
+  document.addEventListener("astro:after-swap", initLang);
 </script>

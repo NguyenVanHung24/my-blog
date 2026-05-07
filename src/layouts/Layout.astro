@@ -2,7 +2,7 @@
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
-import { SITE } from "@/config";
+import { SITE, UI } from "@/config";
 import "@/styles/global.css";
 
 type Props = {
@@ -138,14 +138,20 @@ const structuredData = {
     <ClientRouter />
 
     <!-- Minimal inline script to prevent FOUC - sets theme immediately -->
-    <script is:inline>
+    <script is:inline data-default-theme={UI.defaultTheme} data-default-lang={UI.defaultLang}>
       (function () {
-        const initialColorScheme = ""; // "light" | "dark"
+        const script = document.currentScript;
+        const defaultTheme = script?.dataset.defaultTheme || "light";
+        const defaultLang  = script?.dataset.defaultLang  || "en";
         const currentTheme = localStorage.getItem("theme");
+        // Set default lang on first visit
+        if (!localStorage.getItem("lang")) {
+          localStorage.setItem("lang", defaultLang);
+        }
 
         function getPreferTheme() {
           if (currentTheme) return currentTheme;
-          if (initialColorScheme) return initialColorScheme;
+          if (defaultTheme) return defaultTheme;
           return window.matchMedia("(prefers-color-scheme: dark)").matches
             ? "dark"
             : "light";

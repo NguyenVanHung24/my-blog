@@ -13,7 +13,7 @@ const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 const { title, description, ...props } = data;
 ---
 
-<li class="my-6">
+<li class="my-6" data-lang={data.lang ?? "en"}>
   <a
     href={getPath(id, filePath)}
     class:list={[
