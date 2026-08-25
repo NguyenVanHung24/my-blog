@@ -149,7 +149,7 @@ aws eks describe-cluster \
 
 **Example output:**
 ```
-https://oidc.eks.ap-southeast-1.amazonaws.com/id/ABC123DEF456
+https://oidc.eks.<region>.amazonaws.com/id/<CLUSTER_ID>
 ```
 
 **Important:** Save this URL — you'll need it in Step 2.
@@ -174,8 +174,8 @@ After registration, you'll see the app's overview page. **Copy and save these va
 
 | Field | Where to Find It | Example | What It's Used For |
 |-------|-----------------|---------|-------------------|
-| **Application (client) ID** | Overview page | `aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee` | Identifies your app to Azure |
-| **Directory (tenant) ID** | Overview page | `11111111-2222-3333-4444-555555555555` | Identifies your Azure AD tenant |
+| **Application (client) ID** | Overview page | `<CLIENT_ID>` | Identifies your app to Azure |
+| **Directory (tenant) ID** | Overview page | `<TENANT_ID>` | Identifies your Azure AD tenant |
 
 ---
 
@@ -201,17 +201,17 @@ Now fill in the form with these exact values:
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| **Cluster issuer URL** | `https://oidc.eks.<region>.amazonaws.com/id/<YOUR_ID>` | Paste the OIDC issuer URL from Step 1.1 |
-| **Namespace** | `your-namespace` | The Kubernetes namespace where your pod runs (e.g., `default`, `gitlab-runner`, `production`) |
-| **Service account name** | `your-serviceaccount` | The name of the Kubernetes ServiceAccount (e.g., `gitlab-runner`, `app-sa`) |
+| **Cluster issuer URL** | `https://oidc.eks.<region>.amazonaws.com/id/<CLUSTER_ID>` | Paste the OIDC issuer URL from Step 1.1 |
+| **Namespace** | `your-namespace` | The Kubernetes namespace where your pod runs (e.g., `default`, `production`) |
+| **Service account name** | `your-serviceaccount` | The name of the Kubernetes ServiceAccount (e.g., `app-sa`) |
 | **Subject identifier** | `system:serviceaccount:<namespace>:<sa-name>` | Auto-generated based on namespace and SA name |
 
 **Example values:**
 ```
-Cluster issuer URL: https://oidc.eks.ap-southeast-1.amazonaws.com/id/ABC123DEF456
-Namespace: gitlab-runner
-Service account name: gitlab-runner
-Subject identifier: system:serviceaccount:gitlab-runner:gitlab-runner
+Cluster issuer URL: https://oidc.eks.<region>.amazonaws.com/id/<CLUSTER_ID>
+Namespace: production
+Service account name: app-sa
+Subject identifier: system:serviceaccount:production:app-sa
 ```
 
 **Credential details:**
@@ -297,9 +297,9 @@ kubectl annotate serviceaccount <YOUR_SA_NAME> \
 
 **Example:**
 ```bash
-kubectl annotate serviceaccount gitlab-runner \
-  -n gitlab-runner \
-  azure.workload.identity/client-id="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee" \
+kubectl annotate serviceaccount app-sa \
+  -n production \
+  azure.workload.identity/client-id="<YOUR_CLIENT_ID>" \
   --overwrite
 ```
 
@@ -313,7 +313,7 @@ You should see:
 ```yaml
 metadata:
   annotations:
-    azure.workload.identity/client-id: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+    azure.workload.identity/client-id: <YOUR_CLIENT_ID>
   name: your-serviceaccount
   namespace: your-namespace
 ```
@@ -462,13 +462,13 @@ az login --service-principal \
 [
   {
     "cloudName": "AzureCloud",
-    "id": "11111111-2222-3333-4444-555555555555",
+    "id": "<TENANT_ID>",
     "isDefault": true,
     "name": "N/A(tenant level account)",
     "state": "Enabled",
-    "tenantId": "11111111-2222-3333-4444-555555555555",
+    "tenantId": "<TENANT_ID>",
     "user": {
-      "name": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "name": "<CLIENT_ID>",
       "type": "servicePrincipal"
     }
   }
@@ -724,8 +724,8 @@ deploy-to-azure:
   stage: deploy
   image: mcr.microsoft.com/azure-cli
   variables:
-    AZURE_CLIENT_ID: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
-    AZURE_TENANT_ID: "11111111-2222-3333-4444-555555555555"
+    AZURE_CLIENT_ID: "<YOUR_CLIENT_ID>"
+    AZURE_TENANT_ID: "<YOUR_TENANT_ID>"
     AZURE_FEDERATED_TOKEN_FILE: "/var/run/secrets/tokens/azure-identity-token"
   script:
     - az login --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID 
@@ -857,9 +857,9 @@ You've successfully set up secure, credential-free authentication between AWS EK
 
 | Setting | Format | Example (Placeholder) |
 |---------|--------|----------------------|
-| EKS OIDC Issuer | `https://oidc.eks.<region>.amazonaws.com/id/<ID>` | `https://oidc.eks.us-east-1.amazonaws.com/id/ABC123...` |
-| Azure Client ID | UUID | `aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee` |
-| Azure Tenant ID | UUID | `11111111-2222-3333-4444-555555555555` |
+| EKS OIDC Issuer | `https://oidc.eks.<region>.amazonaws.com/id/<ID>` | `https://oidc.eks.us-east-1.amazonaws.com/id/<CLUSTER_ID>` |
+| Azure Client ID | UUID | `<CLIENT_ID>` |
+| Azure Tenant ID | UUID | `<TENANT_ID>` |
 | Subject | `system:serviceaccount:<ns>:<sa>` | `system:serviceaccount:default:my-app` |
 | Audience | Fixed value | `api://AzureADTokenExchange` |
 | Token Path | Fixed value | `/var/run/secrets/tokens/azure-identity-token` |

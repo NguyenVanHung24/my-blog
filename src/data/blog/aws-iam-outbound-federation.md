@@ -202,7 +202,7 @@ aws iam get-outbound-web-identity-federation-info \
 **Expected output:**
 ```json
 {
-    "IssuerIdentifier": "https://a1385c30-2bad-45a7-9461-c37fd441ac07.tokens.sts.global.api.aws",
+    "IssuerIdentifier": "https://<UUID>.tokens.sts.global.api.aws",
     "IsJwtVendingEnabled": true
 }
 ```
@@ -265,7 +265,7 @@ aws iam create-policy \
 
 ### 2.3 Attach Policy to Your IAM Role
 
-Replace `<YOUR_ROLE_NAME>` with your actual IAM role name (e.g., `gitlab-runner-eks-gitlab-runner`):
+Replace `<YOUR_ROLE_NAME>` with your actual IAM role name (e.g., `example-role`):
 
 ```bash
 aws iam attach-role-policy \
@@ -301,8 +301,8 @@ After registration, copy these values from the Overview page:
 
 | Field | Example | Where to Use |
 |-------|---------|-------------|
-| **Application (client) ID** | `aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee` | In your application code |
-| **Directory (tenant) ID** | `11111111-2222-3333-4444-555555555555` | In your application code |
+| **Application (client) ID** | `<CLIENT_ID>` | In your application code |
+| **Directory (tenant) ID** | `<TENANT_ID>` | In your application code |
 
 ---
 
@@ -326,7 +326,7 @@ Select: **"Other issuer"**
 
 | Field | Value | Notes |
 |-------|-------|-------|
-| **Issuer** | `https://<your-uuid>.tokens.sts.global.api.aws` | Use the exact URL from Step 1.2 |
+| **Issuer** | `https://<UUID>.tokens.sts.global.api.aws` | Use the exact URL from Step 1.2 |
 | **Type** | **Explicit subject identifier** | Select this option |
 | **Subject identifier** | `arn:aws:iam::<account-id>:role/<role-name>` | Your IAM role ARN |
 | **Name** | `aws-iam-outbound-federation` | Descriptive name |
@@ -335,8 +335,8 @@ Select: **"Other issuer"**
 
 **Example values:**
 ```
-Issuer: https://a1385c30-2bad-45a7-9461-c37fd441ac07.tokens.sts.global.api.aws
-Subject: arn:aws:iam::707578706742:role/gitlab-runner-eks-gitlab-runner
+Issuer: https://<UUID>.tokens.sts.global.api.aws
+Subject: arn:aws:iam::<ACCOUNT_ID>:role/<YOUR_ROLE_NAME>
 Audience: api://AzureADTokenExchange
 ```
 
@@ -380,8 +380,8 @@ If testing from an EC2 instance or bastion host running under your IAM role:
 #### 6.1.1 Set Environment Variables
 
 ```bash
-export AZURE_CLIENT_ID="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
-export AZURE_TENANT_ID="11111111-2222-3333-4444-555555555555"
+export AZURE_CLIENT_ID="<YOUR_CLIENT_ID>"
+export AZURE_TENANT_ID="<YOUR_TENANT_ID>"
 ```
 
 Replace with your actual Azure client ID and tenant ID from Step 3.2.
@@ -431,8 +431,8 @@ echo $JWT | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
 ```json
 {
   "aud": "api://AzureADTokenExchange",
-  "sub": "arn:aws:iam::123456789012:role/your-role-name",
-  "iss": "https://a1385c30-2bad-45a7-9461-c37fd441ac07.tokens.sts.global.api.aws",
+  "sub": "arn:aws:iam::<ACCOUNT_ID>:role/<YOUR_ROLE_NAME>",
+  "iss": "https://<UUID>.tokens.sts.global.api.aws",
   "exp": 1724599554,
   "iat": 1724599254
 }
@@ -458,13 +458,13 @@ az login \
 [
   {
     "cloudName": "AzureCloud",
-    "id": "11111111-2222-3333-4444-555555555555",
+    "id": "<TENANT_ID>",
     "isDefault": true,
     "name": "N/A(tenant level account)",
     "state": "Enabled",
-    "tenantId": "11111111-2222-3333-4444-555555555555",
+    "tenantId": "<TENANT_ID>",
     "user": {
-      "name": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "name": "<CLIENT_ID>",
       "type": "servicePrincipal"
     }
   }
@@ -506,17 +506,17 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: aws-iam-federation-test
-  namespace: gitlab-runner  # Change to your namespace
+  namespace: default  # Change to your namespace
 spec:
-  serviceAccountName: gitlab-runner  # Must have IRSA annotation
+  serviceAccountName: example-sa  # Must have IRSA annotation
   
   nodeSelector:
-    workload: gitlab-runner  # Match your node labels
+    workload: example  # Match your node labels
   
   tolerations:
   - key: workload
     operator: Equal
-    value: gitlab-runner
+    value: example
     effect: NoSchedule
   
   containers:
@@ -527,9 +527,9 @@ spec:
     
     env:
     - name: AZURE_CLIENT_ID
-      value: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"  # Change this
+      value: "<YOUR_CLIENT_ID>"  # Change this
     - name: AZURE_TENANT_ID
-      value: "11111111-2222-3333-4444-555555555555"  # Change this
+      value: "<YOUR_TENANT_ID>"  # Change this
 ```
 
 **Replace:**
@@ -550,7 +550,7 @@ kubectl wait --for=condition=ready pod/aws-iam-federation-test \
 #### 6.2.3 Run Test from Pod
 
 ```bash
-kubectl exec -n gitlab-runner aws-iam-federation-test -- bash -c '
+kubectl exec -n default aws-iam-federation-test -- bash -c '
 # Get AWS token
 JWT=$(aws sts get-web-identity-token \
     --audience api://AzureADTokenExchange \
@@ -583,7 +583,7 @@ az rest --method GET \
 #### 6.2.4 Cleanup
 
 ```bash
-kubectl delete pod aws-iam-federation-test -n gitlab-runner
+kubectl delete pod aws-iam-federation-test -n default
 ```
 
 ---
@@ -815,12 +815,12 @@ aws iam enable-outbound-web-identity-federation --region us-east-1
 
 # One IAM policy for all clusters
 aws iam create-policy --policy-name Allow-Azure-Token-Exchange ...
-aws iam attach-role-policy --role-name gitlab-runner-eks-gitlab-runner ...
+aws iam attach-role-policy --role-name <YOUR_ROLE_NAME> ...
 
 # One Azure federated credential
-# Subject: arn:aws:iam::123456789012:role/gitlab-runner-eks-gitlab-runner
+# Subject: arn:aws:iam::<ACCOUNT_ID>:role/<YOUR_ROLE_NAME>
 
-# Works from any cluster!
+# Works from all clusters!
 ```
 
 ### Use Case 2: EC2 Accessing Azure Storage
@@ -832,8 +832,8 @@ aws iam attach-role-policy --role-name gitlab-runner-eks-gitlab-runner ...
 #!/bin/bash
 # On EC2 instance with IAM role
 
-export AZURE_CLIENT_ID="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
-export AZURE_TENANT_ID="11111111-2222-3333-4444-555555555555"
+export AZURE_CLIENT_ID="<YOUR_CLIENT_ID>"
+export AZURE_TENANT_ID="<YOUR_TENANT_ID>"
 export STORAGE_ACCOUNT="mystorageaccount"
 export CONTAINER="backups"
 
@@ -975,11 +975,11 @@ You've successfully set up AWS IAM Outbound Federation to Microsoft Entra ID!
 
 | Setting | Format | Example |
 |---------|--------|---------|
-| AWS Issuer | `https://<uuid>.tokens.sts.global.api.aws` | `https://a1385c30-2bad-45a7-9461-c37fd441ac07.tokens.sts.global.api.aws` |
-| IAM Role ARN | `arn:aws:iam::<account>:role/<name>` | `arn:aws:iam::123456789012:role/my-role` |
-| Azure Client ID | UUID | `aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee` |
-| Azure Tenant ID | UUID | `11111111-2222-3333-4444-555555555555` |
-| Subject | IAM Role ARN | `arn:aws:iam::123456789012:role/my-role` |
+| AWS Issuer | `https://<uuid>.tokens.sts.global.api.aws` | `https://<UUID>.tokens.sts.global.api.aws` |
+| IAM Role ARN | `arn:aws:iam::<account>:role/<name>` | `arn:aws:iam::<ACCOUNT_ID>:role/<YOUR_ROLE>` |
+| Azure Client ID | UUID | `<CLIENT_ID>` |
+| Azure Tenant ID | UUID | `<TENANT_ID>` |
+| Subject | IAM Role ARN | `arn:aws:iam::<ACCOUNT_ID>:role/<YOUR_ROLE>` |
 | Audience | Fixed value | `api://AzureADTokenExchange` |
 
 ### Common Commands
