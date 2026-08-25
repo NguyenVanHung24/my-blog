@@ -2,7 +2,7 @@ export const SITE = {
   website: "https://hungnv.dev/", // replace this with your deployed domain
   author: "Hung Nguyen",
   profile: "https://hungnv.dev/about",
-  desc: "Cloud security engineer sharing notes on AWS, Kubernetes , and the journey of learning in public.",
+  desc: "Cloud security engineer sharing notes on AWS and Kubernetes.",
   title: "Hung's Space",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
